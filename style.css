@@ -11,7 +11,7 @@ body {
   overflow-x: hidden;
 }
 
-/* MUCH LONGER SCROLL */
+/* LONG SCROLL */
 .spacer {
   height: 500vh;
 }
@@ -67,7 +67,7 @@ body {
   z-index: -3;
 }
 
-/* PARTICLES */
+/* BACKGROUND PARTICLES */
 .particle {
   position: absolute;
   width: 3px;
@@ -96,17 +96,11 @@ body {
   width: 60vw;
   max-width: 900px;
   aspect-ratio: 16 / 9;
-  transform: translate(-50%, -50%) scale(0.85) rotateX(10deg);
+  transform: translate(-50%, -50%) scale(0.85);
   opacity: 0;
   transition: opacity 1.2s ease, transform 1.2s ease;
   z-index: -1;
   pointer-events: none;
-}
-
-/* Offset second render */
-.render-offset {
-  transform: translate(-47%, -46%) scale(0.85) rotateX(12deg);
-  z-index: -2;
 }
 
 .render-container img {
@@ -121,14 +115,31 @@ body {
     inset 0 0 40px rgba(180, 120, 255, 0.15);
 }
 
+/* RENDER STATES */
 .render-container.visible {
   opacity: 1;
-  transform: translate(-50%, -50%) scale(1) rotateX(0deg);
-  animation: renderFloat 6s ease-in-out infinite;
+  transform: translate(-50%, -50%) scale(1);
 }
 
-.render-offset.visible {
-  transform: translate(-47%, -46%) scale(1) rotateX(0deg);
+/* PARTICLES FROM RENDER */
+.render-fragment {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: rgba(200, 150, 255, 0.8);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: fragmentFly 2.5s ease-out forwards;
+}
+
+@keyframes fragmentFly {
+  to {
+    transform: translate(
+      calc(-100px + 200px * var(--x)),
+      calc(-100px + 200px * var(--y))
+    );
+    opacity: 0;
+  }
 }
 
 /* ANIMATIONS */
@@ -140,13 +151,4 @@ body {
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-20px); }
-}
-
-@keyframes renderFloat {
-  0%, 100% {
-    transform: translate(-50%, -50%) scale(1);
-  }
-  50% {
-    transform: translate(-50%, -53%) scale(1.02);
-  }
 }
