@@ -13,7 +13,7 @@ body {
 
 /* Scroll height */
 .spacer {
-  height: 300vh;
+  height: 350vh;
 }
 
 /* HERO */
@@ -88,7 +88,7 @@ body {
   pointer-events: none;
 }
 
-/* RENDER IMAGE */
+/* RENDER IMAGES */
 .render-container {
   position: fixed;
   top: 50%;
@@ -101,6 +101,12 @@ body {
   transition: all 1.2s ease;
   z-index: -1;
   pointer-events: none;
+}
+
+/* Offset second render slightly */
+.render-offset {
+  transform: translate(-47%, -46%) scale(0.85) rotateX(12deg);
+  z-index: -2;
 }
 
 .render-container img {
@@ -119,6 +125,10 @@ body {
   opacity: 1;
   transform: translate(-50%, -50%) scale(1) rotateX(0deg);
   animation: renderFloat 6s ease-in-out infinite;
+}
+
+.render-offset.visible {
+  transform: translate(-47%, -46%) scale(1) rotateX(0deg);
 }
 
 /* ANIMATIONS */
