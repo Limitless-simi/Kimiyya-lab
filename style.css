@@ -11,9 +11,8 @@ body {
   overflow-x: hidden;
 }
 
-/* LONG SCROLL */
 .spacer {
-  height: 500vh;
+  height: 520vh;
 }
 
 /* HERO */
@@ -31,13 +30,11 @@ body {
 .hero h1 {
   font-size: 3rem;
   letter-spacing: 0.4em;
-  opacity: 0.9;
 }
 
 .hero p {
   margin-top: 1rem;
   font-size: 0.85rem;
-  letter-spacing: 0.2em;
   opacity: 0.6;
 }
 
@@ -51,7 +48,6 @@ body {
   letter-spacing: 0.3em;
   opacity: 0.6;
   transition: opacity 0.8s ease;
-  pointer-events: none;
   z-index: 10;
 }
 
@@ -59,36 +55,14 @@ body {
   opacity: 0;
 }
 
-/* PARTICLE LAYER */
+/* BACKGROUND PARTICLES */
 #particle-layer {
   position: fixed;
   inset: 0;
-  overflow: hidden;
   z-index: -3;
 }
 
-/* BACKGROUND PARTICLES */
-.particle {
-  position: absolute;
-  width: 3px;
-  height: 3px;
-  background: rgba(190, 130, 255, 0.6);
-  border-radius: 50%;
-  animation: drift linear infinite;
-}
-
-/* WORDS */
-.word {
-  position: absolute;
-  font-size: 1.2rem;
-  letter-spacing: 0.15em;
-  opacity: 0.15;
-  color: #c9a9ff;
-  animation: float 6s ease-in-out infinite;
-  pointer-events: none;
-}
-
-/* RENDER IMAGES */
+/* RENDER CONTAINERS */
 .render-container {
   position: fixed;
   top: 50%;
@@ -96,59 +70,24 @@ body {
   width: 60vw;
   max-width: 900px;
   aspect-ratio: 16 / 9;
-  transform: translate(-50%, -50%) scale(0.85);
+  transform: translate(-50%, -50%);
   opacity: 0;
-  transition: opacity 1.2s ease, transform 1.2s ease;
-  z-index: -1;
+  transition: opacity 1s ease;
   pointer-events: none;
 }
 
-.render-container img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0.85;
-  filter: saturate(1.2) contrast(1.1);
-  border: 1px solid rgba(180, 120, 255, 0.25);
-  box-shadow:
-    0 0 60px rgba(180, 120, 255, 0.3),
-    inset 0 0 40px rgba(180, 120, 255, 0.15);
-}
-
-/* RENDER STATES */
 .render-container.visible {
   opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
 }
 
-/* PARTICLES FROM RENDER */
-.render-fragment {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  background: rgba(200, 150, 255, 0.8);
-  border-radius: 50%;
-  pointer-events: none;
-  animation: fragmentFly 2.5s ease-out forwards;
+/* Offset render 2 */
+.render-offset {
+  transform: translate(-46%, -46%);
 }
 
-@keyframes fragmentFly {
-  to {
-    transform: translate(
-      calc(-100px + 200px * var(--x)),
-      calc(-100px + 200px * var(--y))
-    );
-    opacity: 0;
-  }
-}
-
-/* ANIMATIONS */
-@keyframes drift {
-  from { transform: translateY(0); }
-  to { transform: translateY(-120vh); }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
+.render-container img,
+canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
