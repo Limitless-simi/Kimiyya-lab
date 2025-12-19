@@ -18,12 +18,12 @@ const words = [
 ];
 
 /* CREATE PARTICLES */
-for (let i = 0; i < 120; i++) {
+for (let i = 0; i < 140; i++) {
   const p = document.createElement("div");
   p.className = "particle";
   p.style.left = Math.random() * 100 + "vw";
-  p.style.top = Math.random() * 120 + "vh";
-  p.style.animationDuration = 20 + Math.random() * 40 + "s";
+  p.style.top = Math.random() * 140 + "vh";
+  p.style.animationDuration = 25 + Math.random() * 50 + "s";
   p.style.opacity = Math.random();
   layer.appendChild(p);
 }
@@ -34,7 +34,7 @@ words.forEach(word => {
   w.className = "word";
   w.textContent = word;
   w.style.left = Math.random() * 80 + 10 + "vw";
-  w.style.top = Math.random() * 100 + "vh";
+  w.style.top = Math.random() * 120 + "vh";
   layer.appendChild(w);
 });
 
@@ -43,19 +43,20 @@ window.addEventListener("scroll", () => {
   const y = window.scrollY;
 
   /* Hide scroll hint */
-  if (y > 80) {
+  if (y > 100) {
     scrollHint.classList.add("hidden");
   } else {
     scrollHint.classList.remove("hidden");
   }
 
-  /* Render reveals */
-  if (y > 400) {
+  /* RENDER 1: appear then disappear */
+  if (y > 400 && y < 800) {
     render1.classList.add("visible");
   } else {
     render1.classList.remove("visible");
   }
 
+  /* RENDER 2: appears later */
   if (y > 900) {
     render2.classList.add("visible");
   } else {
@@ -65,6 +66,6 @@ window.addEventListener("scroll", () => {
   /* Parallax words */
   document.querySelectorAll(".word").forEach((w, i) => {
     w.style.transform = `translateY(${y * 0.05 * (i % 3)}px)`;
-    w.style.opacity = Math.min(0.3, 0.1 + y / 3000);
+    w.style.opacity = Math.min(0.3, 0.1 + y / 3500);
   });
 });
