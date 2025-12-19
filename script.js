@@ -1,5 +1,6 @@
 const layer = document.getElementById("particle-layer");
-const render = document.getElementById("render1");
+const render1 = document.getElementById("render1");
+const render2 = document.getElementById("render2");
 const scrollHint = document.getElementById("scrollHint");
 
 /* WORDS */
@@ -41,21 +42,27 @@ words.forEach(word => {
 window.addEventListener("scroll", () => {
   const y = window.scrollY;
 
-  // Hide scroll hint
+  /* Hide scroll hint */
   if (y > 80) {
     scrollHint.classList.add("hidden");
   } else {
     scrollHint.classList.remove("hidden");
   }
 
-  // Reveal render image
+  /* Render reveals */
   if (y > 400) {
-    render.classList.add("visible");
+    render1.classList.add("visible");
   } else {
-    render.classList.remove("visible");
+    render1.classList.remove("visible");
   }
 
-  // Parallax words
+  if (y > 900) {
+    render2.classList.add("visible");
+  } else {
+    render2.classList.remove("visible");
+  }
+
+  /* Parallax words */
   document.querySelectorAll(".word").forEach((w, i) => {
     w.style.transform = `translateY(${y * 0.05 * (i % 3)}px)`;
     w.style.opacity = Math.min(0.3, 0.1 + y / 3000);
