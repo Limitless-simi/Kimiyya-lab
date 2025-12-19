@@ -1,5 +1,8 @@
 const layer = document.getElementById("particle-layer");
+const render = document.getElementById("render1");
+const scrollHint = document.getElementById("scrollHint");
 
+/* WORDS */
 const words = [
   "kimiyya",
   "alchemy",
@@ -13,7 +16,7 @@ const words = [
   "futurity"
 ];
 
-// Create particles
+/* CREATE PARTICLES */
 for (let i = 0; i < 120; i++) {
   const p = document.createElement("div");
   p.className = "particle";
@@ -24,7 +27,7 @@ for (let i = 0; i < 120; i++) {
   layer.appendChild(p);
 }
 
-// Create floating words
+/* CREATE WORDS */
 words.forEach(word => {
   const w = document.createElement("div");
   w.className = "word";
@@ -34,12 +37,27 @@ words.forEach(word => {
   layer.appendChild(w);
 });
 
-// Scroll = subtle parallax
+/* SCROLL INTERACTION */
 window.addEventListener("scroll", () => {
-  const scrollY = window.scrollY;
+  const y = window.scrollY;
 
+  // Hide scroll hint
+  if (y > 80) {
+    scrollHint.classList.add("hidden");
+  } else {
+    scrollHint.classList.remove("hidden");
+  }
+
+  // Reveal render image
+  if (y > 400) {
+    render.classList.add("visible");
+  } else {
+    render.classList.remove("visible");
+  }
+
+  // Parallax words
   document.querySelectorAll(".word").forEach((w, i) => {
-    w.style.transform = `translateY(${scrollY * 0.05 * (i % 3)}px)`;
-    w.style.opacity = 0.1 + scrollY / 3000;
+    w.style.transform = `translateY(${y * 0.05 * (i % 3)}px)`;
+    w.style.opacity = Math.min(0.3, 0.1 + y / 3000);
   });
 });
