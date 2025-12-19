@@ -1,96 +1,120 @@
-const layer = document.getElementById("particle-layer");
+const scrollHint = document.getElementById("scrollHint");
 const render1 = document.getElementById("render1");
 const render2 = document.getElementById("render2");
-const scrollHint = document.getElementById("scrollHint");
+const canvas = document.getElementById("renderCanvas");
+const ctx = canvas.getContext("2d");
 
-/* WORDS */
-const words = [
-  "kimiyya",
-  "alchemy",
-  "cosmology",
-  "ancestral",
-  "protocol",
-  "indigenous",
-  "relational",
-  "decolonize",
-  "laboratory",
-  "futurity"
-];
+const img = new Image();
+img.src = "render1.png";
 
-/* BACKGROUND PARTICLES */
-for (let i = 0; i < 140; i++) {
-  const p = document.createElement("div");
-  p.className = "particle";
-  p.style.left = Math.random() * 100 + "vw";
-  p.style.top = Math.random() * 140 + "vh";
-  p.style.animationDuration = 25 + Math.random() * 50 + "s";
-  p.style.opacity = Math.random();
-  layer.appendChild(p);
+let particles = [];
+let dissolved = false;
+
+/* Resize canvas */
+function resizeCanvas() {
+  canvas.width = canvas.clientWidth;
+  canvas.height = canvas.clientHeight;
 }
+window.addEventListener("resize", resizeCanvas);
 
-/* FLOATING WORDS */
-words.forEach(word => {
-  const w = document.createElement("div");
-  w.className = "word";
-  w.textContent = word;
-  w.style.left = Math.random() * 80 + 10 + "vw";
-  w.style.top = Math.random() * 120 + "vh";
-  layer.appendChild(w);
-});
+/* Particle class */
+class PixelParticle {
+  constructor(x, y, r, g, b) {
+    this.x = x;
+    this.y = y;
+    this.r = r;
+    this.g = g;
+    this.b = b;
+    this.vx = (Math.random() - 0.5) * 4;
+    this.vy = (Math.random() - 0.5) * 4;
+    this.life = 1;
+  }
 
-/* DISSOLVE FUNCTION */
-function dissolveRender(render) {
-  const rect = render.getBoundingClientRect();
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.life -= 0.015;
+  }
 
-  for (let i = 0; i < 40; i++) {
-    const frag = document.createElement("div");
-    frag.className = "render-fragment";
-
-    frag.style.left = rect.left + rect.width / 2 + "px";
-    frag.style.top = rect.top + rect.height / 2 + "px";
-
-    frag.style.setProperty("--x", Math.random());
-    frag.style.setProperty("--y", Math.random());
-
-    document.body.appendChild(frag);
-
-    setTimeout(() => frag.remove(), 2500);
+  draw() {
+    ctx.fillStyle = `rgba(${this.r},${this.g},${this.b},${this.life})`;
+    ctx.fillRect(this.x, this.y, 2, 2);
   }
 }
 
-/* STATE */
-let render1Dissolved = false;
+/* Create particles from image pixels */
+function createParticles() {
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
 
-/* SCROLL INTERACTION */
+  particles = [];
+
+  for (let y = 0; y < canvas.height; y += 6) {
+    for (let x = 0; x < canvas.width; x += 6) {
+      const index = (y * canvas.width + x) * 4;
+      const r = data[index];
+      const g = data[index + 1];
+      const b = data[index + 2];
+      const a = data[index + 3];
+
+      if (a > 120) {
+        particles.push(new PixelParticle(x, y, r, g, b));
+      }
+    }
+  }
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+/* Animate particles */
+function animateParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  particles.forEach(p => {
+    p.update();
+    p.draw();
+  });
+
+  particles = particles.filter(p => p.life > 0);
+
+  if (particles.length > 0) {
+    requestAnimationFrame(animateParticles);
+  }
+}
+
+/* Load image */
+img.onload = () => {
+  resizeCanvas();
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+};
+
+/* SCROLL LOGIC */
 window.addEventListener("scroll", () => {
   const y = window.scrollY;
 
-  /* Hide scroll hint */
   scrollHint.classList.toggle("hidden", y > 100);
 
-  /* Render 1 lifecycle */
-  if (y > 400 && y < 700) {
+  /* Render 1 appears */
+  if (y > 400 && y < 750) {
     render1.classList.add("visible");
-    render1Dissolved = false;
+    if (!dissolved) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    }
   }
 
-  /* Dissolve render 1 */
-  if (y >= 700 && y < 900 && !render1Dissolved) {
-    dissolveRender(render1);
+  /* Dissolve */
+  if (y >= 750 && y < 950 && !dissolved) {
+    createParticles();
+    animateParticles();
+    dissolved = true;
+  }
+
+  /* Hide render 1 */
+  if (y >= 950) {
     render1.classList.remove("visible");
-    render1Dissolved = true;
   }
 
-  /* Render 2 appears */
-  if (y > 900) {
-    render2.classList.add("visible");
-  } else {
-    render2.classList.remove("visible");
-  }
-
-  /* Word parallax */
-  document.querySelectorAll(".word").forEach((w, i) => {
-    w.style.transform = `translateY(${y * 0.05 * (i % 3)}px)`;
-    w.style.opacity = Math.min(0.3, 0.1 + y / 3500);
-  });
+  /* Render 2 */
+  render2.classList.toggle("visible", y > 950);
 });
