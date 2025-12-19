@@ -17,7 +17,7 @@ const words = [
   "futurity"
 ];
 
-/* CREATE PARTICLES */
+/* BACKGROUND PARTICLES */
 for (let i = 0; i < 140; i++) {
   const p = document.createElement("div");
   p.className = "particle";
@@ -28,7 +28,7 @@ for (let i = 0; i < 140; i++) {
   layer.appendChild(p);
 }
 
-/* CREATE WORDS */
+/* FLOATING WORDS */
 words.forEach(word => {
   const w = document.createElement("div");
   w.className = "word";
@@ -38,32 +38,57 @@ words.forEach(word => {
   layer.appendChild(w);
 });
 
+/* DISSOLVE FUNCTION */
+function dissolveRender(render) {
+  const rect = render.getBoundingClientRect();
+
+  for (let i = 0; i < 40; i++) {
+    const frag = document.createElement("div");
+    frag.className = "render-fragment";
+
+    frag.style.left = rect.left + rect.width / 2 + "px";
+    frag.style.top = rect.top + rect.height / 2 + "px";
+
+    frag.style.setProperty("--x", Math.random());
+    frag.style.setProperty("--y", Math.random());
+
+    document.body.appendChild(frag);
+
+    setTimeout(() => frag.remove(), 2500);
+  }
+}
+
+/* STATE */
+let render1Dissolved = false;
+
 /* SCROLL INTERACTION */
 window.addEventListener("scroll", () => {
   const y = window.scrollY;
 
   /* Hide scroll hint */
-  if (y > 100) {
-    scrollHint.classList.add("hidden");
-  } else {
-    scrollHint.classList.remove("hidden");
-  }
+  scrollHint.classList.toggle("hidden", y > 100);
 
-  /* RENDER 1: appear then disappear */
-  if (y > 400 && y < 800) {
+  /* Render 1 lifecycle */
+  if (y > 400 && y < 700) {
     render1.classList.add("visible");
-  } else {
-    render1.classList.remove("visible");
+    render1Dissolved = false;
   }
 
-  /* RENDER 2: appears later */
+  /* Dissolve render 1 */
+  if (y >= 700 && y < 900 && !render1Dissolved) {
+    dissolveRender(render1);
+    render1.classList.remove("visible");
+    render1Dissolved = true;
+  }
+
+  /* Render 2 appears */
   if (y > 900) {
     render2.classList.add("visible");
   } else {
     render2.classList.remove("visible");
   }
 
-  /* Parallax words */
+  /* Word parallax */
   document.querySelectorAll(".word").forEach((w, i) => {
     w.style.transform = `translateY(${y * 0.05 * (i % 3)}px)`;
     w.style.opacity = Math.min(0.3, 0.1 + y / 3500);
