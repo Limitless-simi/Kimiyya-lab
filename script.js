@@ -22,13 +22,42 @@ for (let i = 0; i < 120; i++) {
   bgLayer.appendChild(p);
 }
 
-/* ---------- CANVAS SETUP ---------- */
+/* ---------- CANVAS SIZE ---------- */
 function resizeCanvas() {
   const rect = render1.getBoundingClientRect();
   canvas.width = rect.width;
   canvas.height = rect.height;
+  drawImageContained();
 }
 window.addEventListener("resize", resizeCanvas);
+
+/* ---------- DRAW IMAGE (CONTAIN, NO STRETCH) ---------- */
+function drawImageContained() {
+  if (!img.complete) return;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const imgRatio = img.width / img.height;
+  const canvasRatio = canvas.width / canvas.height;
+
+  let drawWidth, drawHeight, offsetX, offsetY;
+
+  if (imgRatio > canvasRatio) {
+    // image is wider
+    drawWidth = canvas.width;
+    drawHeight = canvas.width / imgRatio;
+    offsetX = 0;
+    offsetY = (canvas.height - drawHeight) / 2;
+  } else {
+    // image is taller
+    drawHeight = canvas.height;
+    drawWidth = canvas.height * imgRatio;
+    offsetX = (canvas.width - drawWidth) / 2;
+    offsetY = 0;
+  }
+
+  ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+}
 
 /* ---------- PARTICLE CLASS ---------- */
 class PixelParticle {
@@ -55,9 +84,9 @@ class PixelParticle {
   }
 }
 
-/* ---------- CREATE PARTICLES ---------- */
+/* ---------- CREATE PARTICLES FROM IMAGE ---------- */
 function createParticles() {
-  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  drawImageContained();
   const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
   particles = [];
 
@@ -65,19 +94,31 @@ function createParticles() {
     for (let x = 0; x < canvas.width; x += 6) {
       const i = (y * canvas.width + x) * 4;
       if (data[i + 3] > 120) {
-        particles.push(new PixelParticle(x, y, data[i], data[i + 1], data[i + 2]));
+        particles.push(
+          new PixelParticle(
+            x,
+            y,
+            data[i],
+            data[i + 1],
+            data[i + 2]
+          )
+        );
       }
     }
   }
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 /* ---------- ANIMATE PARTICLES ---------- */
 function animateParticles() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
   particles.forEach(p => {
     p.update();
     p.draw();
   });
+
   particles = particles.filter(p => p.life > 0);
   if (particles.length) requestAnimationFrame(animateParticles);
 }
@@ -85,7 +126,6 @@ function animateParticles() {
 /* ---------- IMAGE LOAD ---------- */
 img.onload = () => {
   resizeCanvas();
-  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 };
 
 /* ---------- SCROLL LOGIC ---------- */
@@ -98,8 +138,7 @@ window.addEventListener("scroll", () => {
   if (y < 700) {
     dissolving = false;
     particles = [];
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    drawImageContained();
   }
 
   /* SHOW RENDER 1 */
