@@ -11,9 +11,9 @@ body {
   overflow-x: hidden;
 }
 
-/* Scroll height */
+/* MUCH LONGER SCROLL */
 .spacer {
-  height: 350vh;
+  height: 500vh;
 }
 
 /* HERO */
@@ -98,12 +98,12 @@ body {
   aspect-ratio: 16 / 9;
   transform: translate(-50%, -50%) scale(0.85) rotateX(10deg);
   opacity: 0;
-  transition: all 1.2s ease;
+  transition: opacity 1.2s ease, transform 1.2s ease;
   z-index: -1;
   pointer-events: none;
 }
 
-/* Offset second render slightly */
+/* Offset second render */
 .render-offset {
   transform: translate(-47%, -46%) scale(0.85) rotateX(12deg);
   z-index: -2;
